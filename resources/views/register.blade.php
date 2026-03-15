@@ -16,6 +16,15 @@
 <label>Senha</label>
 <input type="password" name="password">
 
+<label>Telefone</label>
+<input 
+type="tel"
+name="telefone"
+placeholder="31999999999"
+maxlength="11"
+required
+oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+
 <button type="submit">Cadastrar</button>
 
 </form>

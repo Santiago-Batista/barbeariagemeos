@@ -50,4 +50,6 @@ Route::middleware(['auth.session','admin'])->group(function () {
     Route::get('/agendamentos/{id}/edit',[AgendamentoController::class,'edit'])->name('agendamentos.edit');
     Route::put('/agendamentos/{id}',[AgendamentoController::class,'update'])->name('agendamentos.update');
     Route::delete('/agendamentos/{id}',[AgendamentoController::class,'destroy'])->name('agendamentos.destroy');
+    Route::get('/api/agendamentos',[AgendamentoController::class,'api']);
+
 });

@@ -18,6 +18,29 @@ return view('agendamentos.index', compact('agendamentos'));
 
 }
 
+public function api()
+{
+
+$agendamentos = Agendamento::with('cliente')->get()->map(function($item){
+
+return [
+
+'title'=>$item->cliente->nome." | ".$item->servico,
+
+'start'=>$item->data.'T'.$item->hora,
+
+'end'=>$item->data.'T'.date('H:i',strtotime($item->hora)+3600),
+
+'color'=>'#00c2ff'
+
+];
+
+});
+
+return response()->json($agendamentos);
+
+}
+
 public function create()
 {
 
@@ -28,17 +51,29 @@ return view('agendamentos.create');
 public function store(Request $request)
 {
 
+$request->validate([
+
+'barbeiro'=>'required',
+
+'servico'=>'required',
+
+'data'=>'required',
+
+'hora'=>'required'
+
+]);
+
 $nome = session('user_name');
 
-// procura cliente
 $cliente = Cliente::where('nome',$nome)->first();
 
-// se não existir cria
 if(!$cliente){
 
 $cliente = Cliente::create([
+
 'nome'=>$nome,
 'telefone'=>''
+
 ]);
 
 }

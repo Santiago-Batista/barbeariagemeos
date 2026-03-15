@@ -49,15 +49,31 @@ border:none;
 color:black;
 border-radius:5px;
 }
+.btn-voltar{
+    display:inline-block;
+    margin-bottom:15px;
+    padding:8px 14px;
+    background:#2c2c2c;
+    color:#fff;
+    text-decoration:none;
+    border-radius:6px;
+    font-size:14px;
+    transition:0.2s;
+}
 
+.btn-voltar:hover{
+    background:#444;
+}
 </style>
 
 </head>
 
 <body>
 
-<div class="container">
 
+
+<div class="container">
+<a href="{{ route('dashboard') }}" class="btn-voltar">← Voltar ao Dashboard</a>
 <h2>Agendar Corte</h2>
 
 <p>Cliente: {{ session('user_name') }}</p>
@@ -89,8 +105,24 @@ border-radius:5px;
 <label>Data</label>
 <input type="date" name="data" required>
 
-<label>Hora</label>
-<input type="time" name="hora" required>
+<select name="hora" required>
+
+<option value="">Selecione o horário</option>
+
+@for($i = 9; $i <= 19; $i++)
+
+@if($i != 12)
+
+<option value="{{ sprintf('%02d:00',$i) }}">
+{{ sprintf('%02d:00',$i) }}
+</option>
+
+@endif
+
+@endfor
+
+</select>
+
 
 <button>Agendar</button>
 

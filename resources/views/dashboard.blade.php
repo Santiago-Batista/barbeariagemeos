@@ -4,92 +4,111 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Dashboard Barbearia</title>
+
+<title>Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial;
-}
-
 body{
-display:flex;
-background:#121212;
-color:white;
-height:100vh;
-}
 
-/* SIDEBAR */
+display:flex;
+
+background:#121212;
+
+color:white;
+
+font-family:Arial;
+
+margin:0;
+
+}
 
 .sidebar{
-width:240px;
-background:#1e1e1e;
-padding:20px;
-}
 
-.sidebar h2{
-margin-bottom:30px;
-text-align:center;
-color:#00c2ff;
+width:230px;
+
+background:#1e1e1e;
+
+padding:20px;
+
 }
 
 .menu a{
+
 display:block;
+
 padding:12px;
+
 margin-bottom:10px;
+
 background:#2a2a2a;
+
 color:white;
+
 text-decoration:none;
+
 border-radius:6px;
+
 }
 
 .menu a:hover{
+
 background:#00c2ff;
+
 color:black;
+
 }
 
-/* MAIN */
-
 .main{
+
 flex:1;
-display:flex;
-flex-direction:column;
+
 }
 
 .header{
-background:#1f1f1f;
-padding:15px 25px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
 
-.logout button{
-background:#ff4d4d;
-border:none;
-padding:8px 14px;
-color:white;
-border-radius:5px;
-cursor:pointer;
+background:#1f1f1f;
+
+padding:15px;
+
+display:flex;
+
+justify-content:space-between;
+
 }
 
 .content{
-padding:30px;
+
+padding:25px;
+
+}
+
+#calendar{
+
+background:white;
+
+padding:20px;
+
+border-radius:10px;
+
+color:black;
+
 }
 
 .card{
-background:#1e1e1e;
-padding:25px;
-border-radius:10px;
-width:300px;
-}
 
-.card h4{
-color:#00c2ff;
-margin-bottom:10px;
+background:#1e1e1e;
+
+padding:20px;
+
+border-radius:10px;
+
+margin-bottom:20px;
+
 }
 
 </style>
@@ -107,12 +126,15 @@ margin-bottom:10px;
 @if(session('user_role') == 'admin')
 
 <a href="/dashboard">Dashboard</a>
+
 <a href="/clientes">Clientes</a>
+
 <a href="/agendamentos">Agendamentos</a>
 
 @else
 
 <a href="/dashboard">Dashboard</a>
+
 <a href="/agendar">Agendar Corte</a>
 
 @endif
@@ -125,11 +147,14 @@ margin-bottom:10px;
 
 <div class="header">
 
-<h3>Bem vindo, {{ session('user_name') }}</h3>
+<h3>Bem vindo {{ session('user_name') }}</h3>
 
-<form class="logout" method="POST" action="/logout">
+<form method="POST" action="/logout">
+
 @csrf
+
 <button>Sair</button>
+
 </form>
 
 </div>
@@ -139,22 +164,83 @@ margin-bottom:10px;
 @if(session('user_role') == 'admin')
 
 <div class="card">
+
 <h4>Painel Admin</h4>
-<p>Use o menu lateral para gerenciar clientes e agendamentos.</p>
+
+<p>Gerencie os agendamentos no calendário.</p>
+
 </div>
 
 @else
 
 <div class="card">
-<h4>Área do Cliente</h4>
-<p>Use o menu lateral para agendar seu corte.</p>
+
+<h4>Área Cliente</h4>
+
+<p>Clique em um horário para agendar.</p>
+
 </div>
 
 @endif
 
+<div id="calendar"></div>
+
 </div>
 
 </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+var calendarEl=document.getElementById('calendar');
+
+var calendar=new FullCalendar.Calendar(calendarEl,{
+
+initialView:'timeGridWeek',
+
+locale:'pt-br',
+
+height:650,
+
+slotMinTime:"08:00:00",
+
+slotMaxTime:"20:00:00",
+
+allDaySlot:false,
+
+events:'/api/agendamentos',
+
+headerToolbar:{
+
+left:'prev,next today',
+
+center:'title',
+
+right:'dayGridMonth,timeGridWeek,timeGridDay'
+
+},
+
+dateClick:function(info){
+
+window.location="/agendar?data="+info.dateStr;
+
+},
+
+eventClick:function(info){
+
+alert(info.event.title);
+
+}
+
+});
+
+calendar.render();
+
+});
+
+</script>
 
 </body>
+
 </html>

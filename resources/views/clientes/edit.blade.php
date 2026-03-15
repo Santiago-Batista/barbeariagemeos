@@ -1,34 +1,113 @@
-@extends('layout')
+<!DOCTYPE html>
+<html lang="pt-br">
 
-@section('content')
+<head>
 
-<h2>Editar Cliente</h2>
+<meta charset="UTF-8">
+<title>Clientes - Barbearia MS</title>
 
-<form action="/clientes/{{ $cliente->id }}" method="POST">
+<style>
 
-@csrf
-@method('PUT')
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:#0a0a0a;
+color:white;
+padding:40px;
+margin:0;
+}
 
-<label>Nome</label>
-<br>
-<input type="text" name="nome" value="{{ $cliente->nome }}">
+/* TOPO */
 
-<br><br>
+.topo{
+margin-bottom:25px;
+}
 
-<label>Email</label>
-<br>
-<input type="email" name="email" value="{{ $cliente->email }}">
+.btn-voltar{
+background:#222;
+padding:8px 16px;
+color:#ccc;
+text-decoration:none;
+border-radius:6px;
+transition:0.3s;
+}
 
-<br><br>
+.btn-voltar:hover{
+background:#d4af37;
+color:black;
+}
 
-<label>Telefone</label>
-<br>
-<input type="text" name="telefone" value="{{ $cliente->telefone }}">
+/* TITULO */
 
-<br><br>
+h2{
+color:#d4af37;
+margin-bottom:20px;
+}
 
-<button type="submit">Atualizar</button>
+/* TABELA */
 
-</form>
+table{
+width:100%;
+border-collapse:collapse;
+background:#151515;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
 
-@endsection
+th,td{
+padding:12px;
+border-bottom:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1e1e1e;
+color:#d4af37;
+}
+
+tr:nth-child(even){
+background:#141414;
+}
+
+tr:hover{
+background:#1f1f1f;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<a href="/dashboard" class="btn-voltar">⬅ Voltar ao Dashboard</a>
+
+</div>
+
+<h2>💈 Clientes</h2>
+
+<table>
+
+<tr>
+<th>Nome</th>
+<th>Email</th>
+<th>Telefone</th>
+</tr>
+
+@foreach($clientes as $cliente)
+
+<tr>
+
+<td>{{ $cliente->nome }}</td>
+<td>{{ $cliente->email }}</td>
+<td>{{ $cliente->telefone }}</td>
+
+</tr>
+
+@endforeach
+
+</table>
+
+</body>
+</html>

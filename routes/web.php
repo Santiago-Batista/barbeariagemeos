@@ -30,6 +30,8 @@ Route::middleware(['auth.session'])->group(function () {
 
     Route::get('/agendar', [AgendamentoController::class,'create'])->name('agendar.create');
     Route::post('/agendar', [AgendamentoController::class,'store'])->name('agendar.store');
+    Route::get('/agendamentos/{id}/edit', [AgendamentoController::class, 'edit']);
+    Route::put('/agendamentos/{id}', [AgendamentoController::class, 'update']);
 });
 
 

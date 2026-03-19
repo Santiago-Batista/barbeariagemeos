@@ -18,6 +18,11 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// recuperar senha
+
+
+Route::get('/recuperar', [AuthController::class, 'showForgotForm']);
+Route::post('/enviar-link-recuperacao', [AuthController::class, 'sendResetLink'])->name('password.email');
 
 //Usuário logado
 

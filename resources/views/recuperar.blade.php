@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login - Barbearia MS</title>
+    <title>Recuperar Senha - Barbearia MS</title>
 
     <style>
         body {
@@ -38,6 +38,12 @@
 
         .login-box h2 {
             color: white;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            color: #aaa;
+            font-size: 14px;
             margin-bottom: 25px;
         }
 
@@ -55,6 +61,7 @@
             border-radius: 6px;
             background: #222;
             color: white;
+            box-sizing: border-box; /* Garante que o padding não estoure a largura */
         }
 
         input:focus {
@@ -81,8 +88,9 @@
 
         .register {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
             color: #aaa;
+            font-size: 14px;
         }
 
         .register a {
@@ -95,21 +103,15 @@
             text-decoration: underline;
         }
 
-        .recuperar {
-            text-align: center;
-            margin-top: 15px;
-            color: #aaa;
+        /* Estilo para as mensagens de erro/sucesso */
+        .status-msg {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
-
-        .recuperar a {
-            color: #d4af37;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .recuperar a:hover {
-            text-decoration: underline;
-        }
+        .success { background: rgba(0, 128, 0, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+        .error { background: rgba(255, 0, 0, 0.2); color: #f87171; border: 1px solid #f87171; }
     </style>
 </head>
 
@@ -123,28 +125,35 @@
 
         <div class="login-box">
 
-            <h2>Login</h2>
+            <h2>Recuperar Senha</h2>
+            <p>Enviaremos um link de recuperação para o seu e-mail.</p>
 
-            <form method="POST" action="/login">
+            {{-- Alerta de Sucesso --}}
+            @if (session('status'))
+                <div class="status-msg success">
+                    {{ session('status') }}
+                </div>
+            @endif
 
+            {{-- Alerta de Erro --}}
+            @if ($errors->has('email'))
+                <div class="status-msg error">
+                    {{ $errors->first('email') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('password.email') }}">
                 @csrf
 
-                <label>Email</label>
-                <input type="email" name="email" required>
+                <label>Seu E-mail de cadastro</label>
+                <input type="email" name="email" value="{{ old('email') }}" required autofocus>
 
-                <label>Senha</label>
-                <input type="password" name="password" required>
-
-                <button type="submit">Entrar</button>
+                <button type="submit">Enviar Link</button>
 
             </form>
 
             <div class="register">
-                <p>Não tem conta?</p>
-                <a href="/register">Criar conta</a>
-            </div>
-            <div class="recuperar">
-                <a href="/recuperar">Esqueceu a senha?</a>
+                <a href="/">Voltar para o Login</a>
             </div>
 
         </div>

@@ -1,0 +1,48 @@
+@extends('layout')
+
+@section('page-title', 'Editar Agendamento')
+
+@section('content')
+<div class="form-box">
+    <h2 style="color:#d4af37;margin-bottom:24px;">Editar Agendamento</h2>
+
+    <form action="/agendamentos/{{ $agendamento->id }}" method="POST">
+        @csrf @method('PUT')
+        <div class="form-group">
+            <label>Cliente</label>
+            <select name="cliente_id">
+                @foreach($clientes as $cliente)
+                <option value="{{ $cliente->id }}" {{ $cliente->id == $agendamento->cliente_id ? 'selected' : '' }}>
+                    {{ $cliente->nome }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Barbeiro</label>
+            <select name="barbeiro">
+                @foreach(['João','Carlos','Pedro'] as $b)
+                <option value="{{ $b }}" {{ $agendamento->barbeiro == $b ? 'selected' : '' }}>{{ $b }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Serviço</label>
+            <select name="servico">
+                @foreach(['Corte','Barba','Corte + Barba'] as $s)
+                <option value="{{ $s }}" {{ $agendamento->servico == $s ? 'selected' : '' }}>{{ $s }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Data</label>
+            <input type="date" name="data" value="{{ $agendamento->data }}">
+        </div>
+        <div class="form-group">
+            <label>Hora</label>
+            <input type="time" name="hora" value="{{ $agendamento->hora }}">
+        </div>
+        <button class="btn btn-gold" type="submit">Salvar alterações</button>
+    </form>
+</div>
+@endsection

@@ -1,0 +1,40 @@
+@extends('layout')
+
+@section('page-title', 'Agendamentos')
+
+@section('content')
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <h2 class="page-title" style="margin:0;border:none;">Agendamentos</h2>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Barbeiro</th>
+            <th>Serviço</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($agendamentos as $a)
+        <tr>
+            <td>{{ $a->cliente->nome }}</td>
+            <td>{{ $a->barbeiro }}</td>
+            <td>{{ $a->servico }}</td>
+            <td>{{ \Carbon\Carbon::parse($a->data)->format('d/m/Y') }}</td>
+            <td>{{ $a->hora }}</td>
+            <td style="display:flex;gap:6px;">
+                <a href="/agendamentos/{{ $a->id }}/edit" class="btn btn-dark">Editar</a>
+                <form method="POST" action="/agendamentos/{{ $a->id }}">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-danger" onclick="return confirm('Excluir agendamento?')">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+@endsection

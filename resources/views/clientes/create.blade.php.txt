@@ -1,0 +1,26 @@
+@extends('layout')
+
+@section('page-title', 'Novo Cliente')
+
+@section('content')
+<div class="form-box">
+    <h2 style="color:#d4af37;margin-bottom:24px;">Novo Cliente</h2>
+
+    <form method="POST" action="/clientes">
+        @csrf
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" name="nome" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label>Telefone</label>
+            <input type="text" name="telefone" placeholder="31999999999" required>
+        </div>
+        <button class="btn btn-gold" type="submit">Salvar</button>
+    </form>
+</div>
+@endsection

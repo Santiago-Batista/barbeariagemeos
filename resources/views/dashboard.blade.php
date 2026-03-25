@@ -1,231 +1,99 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+@extends('layout')
 
-<head>
+@section('page-title', 'Dashboard')
 
-<meta charset="UTF-8">
-<title>Dashboard - Barbearia MS</title>
+@section('content')
+
+@if(session('user_role') == 'admin')
+<div class="cards-grid">
+    <div class="card">
+        <label>Agendamentos hoje</label>
+        <div class="val">—</div>
+        <div class="sub">Veja o calendário abaixo</div>
+    </div>
+    <div class="card">
+        <label>Clientes cadastrados</label>
+        <div class="val">—</div>
+        <div class="sub">Total no sistema</div>
+    </div>
+    <div class="card">
+        <label>Este mês</label>
+        <div class="val">—</div>
+        <div class="sub">Agendamentos no mês</div>
+    </div>
+</div>
+@endif
+
+<div class="section-title">Calendário de agendamentos</div>
 
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <style>
-
-body{
-display:flex;
-background:#0a0a0a;
-color:white;
-font-family:Arial, Helvetica, sans-serif;
-margin:0;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-width:240px;
-background:#151515;
-padding:25px;
-border-right:2px solid #d4af37;
-}
-
-.sidebar h2{
-color:#d4af37;
-text-align:center;
-margin-bottom:30px;
-letter-spacing:2px;
-}
-
-/* MENU */
-
-.menu a{
-display:block;
-padding:12px;
-margin-bottom:10px;
-background:#222;
-color:#ccc;
-text-decoration:none;
-border-radius:6px;
-font-weight:bold;
-transition:0.3s;
-}
-
-.menu a:hover{
-background:#d4af37;
-color:black;
-transform:scale(1.03);
-}
-
-/* MAIN */
-
-.main{
-flex:1;
-}
-
-/* HEADER */
-
-.header{
-background:#151515;
-padding:15px 30px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid #333;
-}
-
-.header h3{
-color:#d4af37;
-}
-
-/* BOTÃO SAIR */
-
-.header button{
-background:#d4af37;
-border:none;
-padding:8px 14px;
-border-radius:5px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.header button:hover{
-background:#c19b2e;
-}
-
-/* CONTEUDO */
-
-.content{
-padding:30px;
-}
-
-/* CARD */
-
-.card{
-background:#151515;
-padding:20px;
-border-radius:10px;
-margin-bottom:25px;
-border-left:4px solid #d4af37;
-}
-
-.card h4{
-margin-top:0;
-color:#d4af37;
-}
-
-/* CALENDARIO */
-
 #calendar{
-background:white;
-padding:20px;
-border-radius:10px;
-color:black;
-box-shadow:0 0 20px rgba(0,0,0,0.6);
+    background:#151515;
+    padding:20px;
+    border-radius:10px;
+    border:1px solid #1f1f1f;
 }
-
+#calendar .fc-toolbar-title{ color:#d4af37; font-size:16px; }
+#calendar .fc-button{
+    background:#1f1f1f !important;
+    border:1px solid #333 !important;
+    color:#ccc !important;
+    font-size:12px !important;
+}
+#calendar .fc-button:hover{
+    background:#d4af37 !important;
+    color:#000 !important;
+}
+#calendar .fc-button-active{
+    background:#d4af37 !important;
+    color:#000 !important;
+}
+#calendar .fc-col-header-cell{ background:#1a1a1a; color:#d4af37; }
+#calendar .fc-timegrid-slot{ border-color:#1f1f1f; }
+#calendar .fc-scrollgrid{ border-color:#1f1f1f; }
+#calendar .fc-day-today{ background:#1a1500 !important; }
+#calendar td, #calendar th{ border-color:#1f1f1f !important; }
+#calendar .fc-event{
+    background:#d4af37;
+    border:none;
+    color:#000;
+    font-size:12px;
+    font-weight:bold;
+    border-radius:4px;
+}
+#calendar .fc-daygrid-day-number,
+#calendar .fc-col-header-cell-cushion{ color:#ccc; text-decoration:none; }
 </style>
-
-</head>
-
-<body>
-
-<div class="sidebar">
-
-<h2>💈 Barbearia MS</h2>
-
-<div class="menu">
-
-@if(session('user_role') == 'admin')
-
-<a href="/dashboard">Dashboard</a>
-<a href="/clientes">Clientes</a>
-<a href="/agendamentos">Agendamentos</a>
-
-@else
-
-<a href="/dashboard">Dashboard</a>
-<a href="/agendar">Agendar Corte</a>
-
-@endif
-
-</div>
-
-</div>
-
-<div class="main">
-
-<div class="header">
-
-<h3>Bem vindo {{ session('user_name') }}</h3>
-
-<form method="POST" action="/logout">
-@csrf
-<button>Sair</button>
-</form>
-
-</div>
-
-<div class="content">
-
-@if(session('user_role') == 'admin')
-
-<div class="card">
-<h4>Painel Admin</h4>
-<p>Gerencie os agendamentos no calendário.</p>
-</div>
-
-@else
-
-<div class="card">
-<h4>Área Cliente</h4>
-<p>Clique em um horário para agendar seu corte.</p>
-</div>
-
-@endif
 
 <div id="calendar"></div>
 
-</div>
-
-</div>
-
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
-
-var calendarEl = document.getElementById('calendar');
-
-var calendar = new FullCalendar.Calendar(calendarEl, {
-
-initialView:'timeGridWeek',
-locale:'pt-br',
-height:650,
-slotMinTime:"08:00:00",
-slotMaxTime:"20:00:00",
-allDaySlot:false,
-
-events:'/api/agendamentos',
-
-headerToolbar:{
-left:'prev,next today',
-center:'title',
-right:'dayGridMonth,timeGridWeek,timeGridDay'
-},
-
-dateClick:function(info){
-window.location="/agendar?data="+info.dateStr;
-},
-
-eventClick:function(info){
-alert(info.event.title);
-}
-
+    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: 'timeGridWeek',
+        locale: 'pt-br',
+        height: 620,
+        slotMinTime: "08:00:00",
+        slotMaxTime: "20:00:00",
+        allDaySlot: false,
+        events: '/api/agendamentos',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        dateClick: function(info) {
+            window.location = "/agendar?data=" + info.dateStr;
+        },
+        eventClick: function(info) {
+            alert(info.event.title);
+        }
+    });
+    calendar.render();
 });
-
-calendar.render();
-
-});
-
 </script>
 
-</body>
-</html>
+@endsection

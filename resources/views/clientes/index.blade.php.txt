@@ -1,0 +1,37 @@
+@extends('layout')
+
+@section('page-title', 'Clientes')
+
+@section('content')
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <h2 class="page-title" style="margin:0;border:none;">Clientes</h2>
+    <a href="/clientes/create" class="btn btn-gold">+ Novo cliente</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($clientes as $cliente)
+        <tr>
+            <td>{{ $cliente->nome }}</td>
+            <td>{{ $cliente->email }}</td>
+            <td>{{ $cliente->telefone }}</td>
+            <td style="display:flex;gap:6px;">
+                <a href="/clientes/{{ $cliente->id }}/edit" class="btn btn-dark">Editar</a>
+                <form method="POST" action="/clientes/{{ $cliente->id }}">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-danger" onclick="return confirm('Excluir cliente?')">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+@endsection

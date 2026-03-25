@@ -1,0 +1,812 @@
+"=== agendamentos/index ==="  
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Agendamentos - Barbearia MS</title>
+
+<style>
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:#0a0a0a;
+color:white;
+padding:40px;
+margin:0;
+}
+
+/* TOPO */
+
+.topo{
+margin-bottom:25px;
+}
+
+.btn-voltar{
+background:#222;
+padding:8px 16px;
+color:#ccc;
+text-decoration:none;
+border-radius:6px;
+transition:0.3s;
+}
+
+.btn-voltar:hover{
+background:#d4af37;
+color:black;
+}
+
+/* TITULO */
+
+h2{
+color:#d4af37;
+margin-bottom:20px;
+}
+
+/* TABELA */
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#151515;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 0 15px rgba(0,0,0,0.7);
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1f1f1f;
+color:#d4af37;
+}
+
+tr:nth-child(even){
+background:#141414;
+}
+
+tr:hover{
+background:#1f1f1f;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<a href="/dashboard" class="btn-voltar">⬅ Voltar ao Dashboard</a>
+
+</div>
+
+<h2>📅 Agendamentos</h2>
+
+<table>
+
+<tr>
+<th>Cliente</th>
+<th>Barbeiro</th>
+<th>Serviço</th>
+<th>Data</th>
+<th>Hora</th>
+</tr>
+
+@foreach($agendamentos as $a)
+
+<tr>
+
+<td>{{ $a->cliente->nome }}</td>
+<td>{{ $a->barbeiro }}</td>
+<td>{{ $a->servico }}</td>
+<td>{{ $a->data }}</td>
+<td>{{ $a->hora }}</td>
+
+</tr>
+
+@endforeach
+
+</table>
+
+</body>
+
+</html>"=== agendamentos/create ==="  
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Agendar Corte - Barbearia MS</title>
+
+<style>
+
+body{
+background:#0a0a0a;
+font-family:Arial, Helvetica, sans-serif;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+/* CAIXA */
+
+.container{
+background:#151515;
+padding:40px;
+border-radius:10px;
+width:380px;
+box-shadow:0 0 20px rgba(0,0,0,0.7);
+border-left:4px solid #d4af37;
+}
+
+/* TITULO */
+
+h2{
+color:#d4af37;
+margin-top:0;
+text-align:center;
+margin-bottom:20px;
+}
+
+/* CLIENTE */
+
+.cliente{
+text-align:center;
+margin-bottom:20px;
+color:#ccc;
+}
+
+/* LABEL */
+
+label{
+margin-top:10px;
+display:block;
+color:#ccc;
+font-weight:bold;
+}
+
+/* INPUTS */
+
+input,select{
+width:100%;
+padding:10px;
+margin-top:6px;
+background:#222;
+border:none;
+color:white;
+border-radius:6px;
+}
+
+input:focus,select:focus{
+outline:none;
+background:#2a2a2a;
+}
+
+/* BOTAO AGENDAR */
+
+button{
+margin-top:20px;
+width:100%;
+padding:12px;
+background:#d4af37;
+border:none;
+color:black;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#c19b2e;
+transform:scale(1.03);
+}
+
+/* BOTAO VOLTAR */
+
+.btn-voltar{
+display:inline-block;
+margin-bottom:15px;
+padding:8px 14px;
+background:#222;
+color:#ccc;
+text-decoration:none;
+border-radius:6px;
+font-size:14px;
+transition:0.2s;
+}
+
+.btn-voltar:hover{
+background:#d4af37;
+color:black;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<a href="{{ route('dashboard') }}" class="btn-voltar">← Voltar ao Dashboard</a>
+
+<h2>💈 Agendar Corte</h2>
+
+<p class="cliente">Cliente: {{ session('user_name') }}</p>
+
+<form method="POST" action="/agendar">
+
+@csrf
+
+<label>Barbeiro</label>
+
+<select name="barbeiro">
+
+<option value="João">João</option>
+<option value="Carlos">Carlos</option>
+<option value="Pedro">Pedro</option>
+
+</select>
+
+<label>Serviço</label>
+
+<select name="servico">
+
+<option value="Corte">Corte</option>
+<option value="Barba">Barba</option>
+<option value="Corte + Barba">Corte + Barba</option>
+
+</select>
+
+<label>Data</label>
+<input type="date" name="data" required>
+
+<label>Horário</label>
+
+<select name="hora" required>
+
+<option value="">Selecione o horário</option>
+
+@for($i = 9; $i <= 19; $i++)
+
+@if($i != 12)
+
+<option value="{{ sprintf('%02d:00',$i) }}">
+{{ sprintf('%02d:00',$i) }}
+</option>
+
+@endif
+
+@endfor
+
+</select>
+
+<button>Agendar</button>
+
+</form>
+
+</div>
+
+</body>
+</html>"=== agendamentos/edit ==="  
+@extends('layout')
+
+@section('content')
+
+<style>
+
+.edit-box{
+max-width:500px;
+background:#151515;
+padding:30px;
+border-radius:10px;
+border-left:4px solid #d4af37;
+box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+
+.edit-box h2{
+color:#d4af37;
+margin-bottom:25px;
+}
+
+label{
+color:#ccc;
+font-weight:bold;
+}
+
+select,input{
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:18px;
+border:none;
+border-radius:6px;
+background:#222;
+color:white;
+}
+
+select:focus,input:focus{
+outline:none;
+background:#2a2a2a;
+}
+
+button{
+background:#d4af37;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#c19b2e;
+transform:scale(1.03);
+}
+
+</style>
+
+<div class="edit-box">
+
+<h2>Editar Agendamento</h2>
+
+<form action="/agendamentos/{{ $agendamento->id }}" method="POST">
+
+@csrf
+@method('PUT')
+
+<label>Cliente</label>
+
+<select name="cliente_id">
+
+@foreach($clientes as $cliente)
+
+<option value="{{ $cliente->id }}"
+@if($cliente->id == $agendamento->cliente_id) selected @endif>
+
+{{ $cliente->nome }}
+
+</option>
+
+@endforeach
+
+</select>
+
+<label>Data</label>
+<input type="date" name="data" value="{{ $agendamento->data }}">
+
+<label>Hora</label>
+<input type="time" name="hora" value="{{ $agendamento->hora }}">
+
+<button type="submit">Atualizar</button>
+
+</form>
+
+</div>
+
+@endsection"=== clientes/index ==="  
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Clientes - Barbearia MS</title>
+
+<style>
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:#0a0a0a;
+color:white;
+padding:40px;
+margin:0;
+}
+
+/* TOPO */
+
+.topo{
+margin-bottom:25px;
+}
+
+.btn-voltar{
+background:#222;
+padding:8px 16px;
+color:#ccc;
+text-decoration:none;
+border-radius:6px;
+transition:0.3s;
+}
+
+.btn-voltar:hover{
+background:#d4af37;
+color:black;
+}
+
+/* TITULO */
+
+h2{
+color:#d4af37;
+margin-bottom:20px;
+}
+
+/* TABELA */
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#151515;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 0 15px rgba(0,0,0,0.7);
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1f1f1f;
+color:#d4af37;
+}
+
+tr:nth-child(even){
+background:#141414;
+}
+
+tr:hover{
+background:#1f1f1f;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<a href="/dashboard" class="btn-voltar">⬅ Voltar ao Dashboard</a>
+
+</div>
+
+<h2>💈 Clientes</h2>
+
+<table>
+
+<tr>
+<th>Nome</th>
+<th>Email</th>
+<th>Telefone</th>
+</tr>
+
+@foreach($clientes as $cliente)
+
+<tr>
+
+<td>{{ $cliente->nome }}</td>
+<td>{{ $cliente->email }}</td>
+<td>{{ $cliente->telefone }}</td>
+
+</tr>
+
+@endforeach
+
+</table>
+
+</body>
+</html>"=== clientes/create ==="  
+@extends('layout')
+
+@section('content')
+
+<style>
+
+.form-container{
+max-width:500px;
+background:#151515;
+padding:30px;
+border-radius:10px;
+border-left:4px solid #d4af37;
+box-shadow:0 0 15px rgba(0,0,0,0.7);
+}
+
+.form-container h2{
+color:#d4af37;
+margin-bottom:25px;
+}
+
+label{
+color:#ccc;
+font-weight:bold;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:18px;
+border:none;
+border-radius:6px;
+background:#222;
+color:white;
+}
+
+input:focus{
+outline:none;
+background:#2a2a2a;
+}
+
+button{
+background:#d4af37;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#c19b2e;
+transform:scale(1.03);
+}
+
+</style>
+
+<div class="form-container">
+
+<h2>💈 Novo Cliente</h2>
+
+<form method="POST" action="/clientes">
+
+@csrf
+
+<label>Nome</label>
+<input type="text" name="nome" required>
+
+<label>Email</label>
+<input type="email" name="email" required>
+
+<label>Telefone</label>
+<input type="text" name="telefone" placeholder="31999999999" required>
+
+<button type="submit">Salvar</button>
+
+</form>
+
+</div>
+
+@endsection"=== clientes/edit ==="  
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Clientes - Barbearia MS</title>
+
+<style>
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:#0a0a0a;
+color:white;
+padding:40px;
+margin:0;
+}
+
+/* TOPO */
+
+.topo{
+margin-bottom:25px;
+}
+
+.btn-voltar{
+background:#222;
+padding:8px 16px;
+color:#ccc;
+text-decoration:none;
+border-radius:6px;
+transition:0.3s;
+}
+
+.btn-voltar:hover{
+background:#d4af37;
+color:black;
+}
+
+/* TITULO */
+
+h2{
+color:#d4af37;
+margin-bottom:20px;
+}
+
+/* TABELA */
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#151515;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1e1e1e;
+color:#d4af37;
+}
+
+tr:nth-child(even){
+background:#141414;
+}
+
+tr:hover{
+background:#1f1f1f;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<a href="/dashboard" class="btn-voltar">⬅ Voltar ao Dashboard</a>
+
+</div>
+
+<h2>💈 Clientes</h2>
+
+<table>
+
+<tr>
+<th>Nome</th>
+<th>Email</th>
+<th>Telefone</th>
+</tr>
+
+@foreach($clientes as $cliente)
+
+<tr>
+
+<td>{{ $cliente->nome }}</td>
+<td>{{ $cliente->email }}</td>
+<td>{{ $cliente->telefone }}</td>
+
+</tr>
+
+@endforeach
+
+</table>
+
+</body>
+</html>"=== relatorios/index ==="  
+"=== register ==="  
+@extends('layout')
+
+@section('content')
+
+<style>
+
+.cadastro-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:80vh;
+}
+
+.cadastro-box{
+    background:#151515;
+    padding:40px;
+    border-radius:10px;
+    width:350px;
+    box-shadow:0 0 20px rgba(0,0,0,0.8);
+}
+
+.cadastro-box h2{
+    text-align:center;
+    color:#d4af37;
+    margin-bottom:25px;
+}
+
+label{
+    color:#bbb;
+    font-size:14px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    margin-bottom:18px;
+    border:none;
+    border-radius:6px;
+    background:#222;
+    color:white;
+}
+
+input:focus{
+    outline:none;
+    background:#2a2a2a;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#d4af37;
+    border:none;
+    border-radius:6px;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#c19b2e;
+    transform:scale(1.03);
+}
+
+</style>
+
+<div class="cadastro-container">
+
+<div class="cadastro-box">
+
+<h2>Cadastrar</h2>
+
+<form method="POST" action="/register">
+
+@csrf
+
+<label>Nome</label>
+<input type="text" name="name" required>
+
+<label>Email</label>
+<input type="email" name="email" required>
+
+<label>Senha</label>
+<input type="password" name="password" required>
+
+<label>Telefone</label>
+<input 
+type="tel"
+name="telefone"
+placeholder="31999999999"
+maxlength="11"
+required
+oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+
+<button type="submit">Cadastrar</button>
+
+</form>
+
+</div>
+
+</div>
+
+@endsection

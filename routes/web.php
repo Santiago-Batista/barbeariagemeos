@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\AgendamentoController;
-
+use App\Http\Controllers\RelatorioController;
 
 
 //Login / Registro
@@ -53,5 +53,8 @@ Route::middleware(['auth.session','admin'])->group(function () {
     Route::put('/agendamentos/{id}',[AgendamentoController::class,'update'])->name('agendamentos.update');
     Route::delete('/agendamentos/{id}',[AgendamentoController::class,'destroy'])->name('agendamentos.destroy');
     Route::get('/api/agendamentos',[AgendamentoController::class,'api']);
+
+    Route::get('/relatorios', [RelatorioController::class,'index'])->name('relatorios.index');
+    Route::post('/relatorios/gerar', [RelatorioController::class,'gerar'])->name('relatorios.gerar');
 
 });

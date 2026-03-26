@@ -12,24 +12,30 @@ use App\Http\Controllers\RelatorioController;
 
 Route::get('/', [AuthController::class, 'loginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
 Route::get('/register', [AuthController::class, 'registerForm'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// --- Recuperação de Senha ---
+Route::get('/recuperar', [AuthController::class, 'showForgotForm']);
+Route::post('/enviar-link-recuperacao', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'updatePassword'])->name('password.update');
 
-//Usuário logado
-
-
+// --- Usuário Logado (Dashboard e Agendamento) ---
 Route::middleware(['auth.session'])->group(function () {
-
+    
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/agendar', [AgendamentoController::class,'create'])->name('agendar.create');
-    Route::post('/agendar', [AgendamentoController::class,'store'])->name('agendar.store');
+    // Rota para o calendário buscar os agendamentos (JSON)
+    Route::get('/api/agendamentos', [AgendamentoController::class, 'api']);
+
+    Route::get('/agendar', [AgendamentoController::class, 'create'])->name('agendar.create');
+    Route::post('/agendar', [AgendamentoController::class, 'store'])->name('agendar.store');
+    
+    // Edição rápida pelo próprio usuário
     Route::get('/agendamentos/{id}/edit', [AgendamentoController::class, 'edit']);
     Route::put('/agendamentos/{id}', [AgendamentoController::class, 'update']);
 });

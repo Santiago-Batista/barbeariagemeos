@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
 <title>Login - Barbearia MS</title>
@@ -131,4 +132,5 @@ body{
     </div>
 </div>
 </body>
+
 </html>

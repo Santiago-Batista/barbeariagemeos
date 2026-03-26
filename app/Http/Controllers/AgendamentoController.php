@@ -8,88 +8,75 @@ use App\Models\Cliente;
 
 class AgendamentoController extends Controller
 {
+    public function index()
+    {
+        $agendamentos = Agendamento::with('cliente')->get();
+        return view('agendamentos.index', compact('agendamentos'));
+    }
 
-public function index()
-{
+    public function api(Request $request)
+    {
+        $query = Agendamento::with('cliente');
 
-$agendamentos = Agendamento::with('cliente')->get();
+        // Filtro por barbeiro funcionando certinho!
+        if ($request->has('barbeiro') && $request->barbeiro != '') {
+            $query->where('barbeiro', $request->barbeiro);
+        }
 
-return view('agendamentos.index', compact('agendamentos'));
+        $agendamentos = $query->get()->map(function ($item) {
+            return [
+                // Adicionado '?? 'Cliente'' para evitar erro se o cliente sumir do banco
+                'title' => ($item->cliente->nome ?? 'Cliente') . " | " . $item->servico,
+                'start' => $item->data . 'T' . $item->hora,
+                'end' => $item->data . 'T' . date('H:i', strtotime($item->hora) + 3600),
+                'backgroundColor' => '#d4af37',
+                'textColor' => '#000000',
+            ];
+        });
 
-}
+        return response()->json($agendamentos);
+    }
 
-public function api()
-{
+    public function create()
+    {
+        return view('agendamentos.create');
+    }
 
-$agendamentos = Agendamento::with('cliente')->get()->map(function($item){
+    public function store(Request $request)
+    {
+        $request->validate([
+            'barbeiro' => 'required',
+            'servico' => 'required',
+            'data' => 'required',
+            'hora' => 'required'
+        ]);
 
-return [
+        // Trava individual por barbeiro correta!
+        $conflito = Agendamento::where('barbeiro', $request->barbeiro)
+            ->where('data', $request->data)
+            ->where('hora', $request->hora)
+            ->exists();
 
-'title'=>$item->cliente->nome." | ".$item->servico,
+        if ($conflito) {
+            return back()->withErrors(['erro_agenda' => 'Este barbeiro já possui um cliente agendado para este horário!']);
+        }
 
-'start'=>$item->data.'T'.$item->hora,
+        // Ajuste: Fallback caso a session falhe (tenta pegar do Auth se houver)
+        $nome = session('user_name') ?? auth()->user()->name ?? 'Cliente Deslogado';
+        
+        $cliente = Cliente::firstOrCreate(
+            ['nome' => $nome],
+            ['telefone' => ''] // Cria com telefone vazio se não existir
+        );
 
-'end'=>$item->data.'T'.date('H:i',strtotime($item->hora)+3600),
+        Agendamento::create([
+            'cliente_id' => $cliente->id,
+            'barbeiro' => $request->barbeiro,
+            'servico' => $request->servico,
+            'data' => $request->data,
+            'hora' => $request->hora
+        ]);
 
-'color'=>'#00c2ff'
-
-];
-
-});
-
-return response()->json($agendamentos);
-
-}
-
-public function create()
-{
-
-return view('agendamentos.create');
-
-}
-
-public function store(Request $request)
-{
-
-$request->validate([
-
-'barbeiro'=>'required',
-
-'servico'=>'required',
-
-'data'=>'required',
-
-'hora'=>'required'
-
-]);
-
-$nome = session('user_name');
-
-$cliente = Cliente::where('nome',$nome)->first();
-
-if(!$cliente){
-
-$cliente = Cliente::create([
-
-'nome'=>$nome,
-'telefone'=>''
-
-]);
-
-}
-
-Agendamento::create([
-
-'cliente_id'=>$cliente->id,
-'barbeiro'=>$request->barbeiro,
-'servico'=>$request->servico,
-'data'=>$request->data,
-'hora'=>$request->hora
-
-]);
-
-return redirect('/dashboard');
-
-}
-
+        return redirect('/dashboard')->with('status', 'Agendamento realizado com sucesso!');
+    }
 }

@@ -129,6 +129,9 @@ body{
         <div class="link-register">
             Não tem conta? <a href="/register">Criar conta</a>
         </div>
+        <div class="link-register">
+            Esqueçeu sua senha? <a href="/recuperar">Recuperar senha</a>
+        </div>
     </div>
 </div>
 </body>

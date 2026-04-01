@@ -113,6 +113,9 @@ body{
         <a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><span class="icon">◈</span> Dashboard</a>
         @if(session('user_role') == 'admin')
             <a href="/agendamentos"><span class="icon">◷</span> Agendamentos</a>
+
+            <a href="/relatorios" class="{{ request()->is('relatorios') ? 'active' : '' }}"><span class="icon">📊</span> Relatórios</a>
+
         @else
             <a href="/agendar"><span class="icon">◷</span> Agendar Corte</a>
         @endif

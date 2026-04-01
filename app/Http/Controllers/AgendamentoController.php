@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Agendamento;
 use App\Models\Cliente;
+use Illuminate\Support\Facades\Auth;
 
 class AgendamentoController extends Controller
 {
@@ -18,17 +19,16 @@ class AgendamentoController extends Controller
     {
         $query = Agendamento::with('cliente');
 
-        // Filtro por barbeiro funcionando certinho!
         if ($request->has('barbeiro') && $request->barbeiro != '') {
             $query->where('barbeiro', $request->barbeiro);
         }
 
         $agendamentos = $query->get()->map(function ($item) {
             return [
-                // Adicionado '?? 'Cliente'' para evitar erro se o cliente sumir do banco
+                'id' => $item->id,
                 'title' => ($item->cliente->nome ?? 'Cliente') . " | " . $item->servico,
-                'start' => $item->data . 'T' . $item->hora,
-                'end' => $item->data . 'T' . date('H:i', strtotime($item->hora) + 3600),
+                'start' => $item->data . 'T' . date('H:i:s', strtotime($item->hora)),
+                'end' => $item->data . 'T' . date('H:i:s', strtotime($item->hora) + 3600),
                 'backgroundColor' => '#d4af37',
                 'textColor' => '#000000',
             ];
@@ -51,22 +51,20 @@ class AgendamentoController extends Controller
             'hora' => 'required'
         ]);
 
-        // Trava individual por barbeiro correta!
         $conflito = Agendamento::where('barbeiro', $request->barbeiro)
             ->where('data', $request->data)
             ->where('hora', $request->hora)
             ->exists();
 
         if ($conflito) {
-            return back()->withErrors(['erro_agenda' => 'Este barbeiro já possui um cliente agendado para este horário!']);
+            return back()->withErrors(['erro_agenda' => 'Horário já ocupado!']);
         }
 
-        // Ajuste: Fallback caso a session falhe (tenta pegar do Auth se houver)
         $nome = session('user_name') ?? auth()->user()->name ?? 'Cliente Deslogado';
         
         $cliente = Cliente::firstOrCreate(
             ['nome' => $nome],
-            ['telefone' => ''] // Cria com telefone vazio se não existir
+            ['telefone' => '']
         );
 
         Agendamento::create([
@@ -77,6 +75,23 @@ class AgendamentoController extends Controller
             'hora' => $request->hora
         ]);
 
-        return redirect('/dashboard')->with('status', 'Agendamento realizado com sucesso!');
+        return redirect('/dashboard')->with('status', 'Agendado com sucesso!');
+    }
+
+    // Caso precise dos métodos de edição que estão nas rotas
+    public function edit($id) {
+        $agendamento = Agendamento::findOrFail($id);
+        return view('agendamentos.edit', compact('agendamento'));
+    }
+
+    public function update(Request $request, $id) {
+        $agendamento = Agendamento::findOrFail($id);
+        $agendamento->update($request->all());
+        return redirect('/dashboard');
+    }
+
+    public function destroy($id) {
+        Agendamento::destroy($id);
+        return back();
     }
 }
